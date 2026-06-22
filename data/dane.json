@@ -1,0 +1,91 @@
+{
+  "stacje": [
+    {
+      "id": 114,
+      "nazwa": "ul. Bartnicza",
+      "lat": 51.115933,
+      "lon": 17.141125,
+      "pomiary": {
+        "NO": 1.2,
+        "NO2": 0.2,
+        "NOx": 2.0,
+        "O3": 109.2
+      },
+      "papierosy": null,
+      "papierosy_zima": null,
+      "pm25_zima": null,
+      "insight": "Podwyższony ozon (O₃) wynika z reakcji fotochemicznych przy wysokim nasłonecznieniu — typowe dla popołudniowych godzin letnich."
+    },
+    {
+      "id": 115,
+      "nazwa": "ul. Na Grobli",
+      "lat": 51.103456,
+      "lon": 17.059225,
+      "pomiary": {},
+      "papierosy": null,
+      "papierosy_zima": 0.9,
+      "pm25_zima": 20.24,
+      "insight": null
+    },
+    {
+      "id": 117,
+      "nazwa": "wyb. Conrada-Korzeniowskiego",
+      "lat": 51.129378,
+      "lon": 17.02925,
+      "pomiary": {
+        "C6H6": 0.42,
+        "CO": 234.0,
+        "NO": 0.8,
+        "NO2": 2.2,
+        "NOx": 3.5,
+        "O3": 147.3,
+        "PM2.5": 15.6,
+        "SO2": 8.9
+      },
+      "papierosy": 0.7,
+      "papierosy_zima": 0.9,
+      "pm25_zima": 20.23,
+      "insight": "Podwyższony ozon (O₃) wynika z reakcji fotochemicznych przy wysokim nasłonecznieniu — typowe dla popołudniowych godzin letnich."
+    },
+    {
+      "id": 122,
+      "nazwa": "ul. Orzechowa",
+      "lat": 51.077525,
+      "lon": 17.042817,
+      "pomiary": {},
+      "papierosy": null,
+      "papierosy_zima": null,
+      "pm25_zima": null,
+      "insight": null
+    },
+    {
+      "id": 129,
+      "nazwa": "Al. Wiśniowa",
+      "lat": 51.086225,
+      "lon": 17.012689,
+      "pomiary": {
+        "CO": 465.0,
+        "NO": 11.3,
+        "NO2": 18.2,
+        "NOx": 35.6,
+        "PM2.5": 8.6
+      },
+      "papierosy": 0.5,
+      "papierosy_zima": 1.1,
+      "pm25_zima": 24.57,
+      "insight": "Umiarkowane NO₂ na Al. Wiśniowej — emisja komunikacyjna z trasy wylotowej, poniżej progu alarmowego WHO."
+    }
+  ],
+  "heatmap": [
+    [
+      51.129378,
+      17.02925,
+      16.04
+    ],
+    [
+      51.086225,
+      17.012689,
+      11.66
+    ]
+  ]
+}

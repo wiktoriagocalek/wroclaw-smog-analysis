@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wrocław</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    #map { width: 100%; height: 100vh; }
+
+    /*
+      SVG filter robi 3 rzeczy:
+      1. Invert: ciemne kafelki CARTO → jasne tło + ciemne drogi
+      2. Grayscale: usuwa kolor
+      3. Gamma(exponent=4): nieliniowa krzywa — białe zostaje białe (1^4=1),
+         szarość dróg ~0.8 → 0.8^4 ≈ 0.41 ≈ rgb(107,107,107) ✓
+    */
+    .leaflet-tile-pane {
+      filter: url(#mapFilter);
+    }
+
+    .leaflet-container { background: #fff !important; }
+    .leaflet-control-attribution,
+    .leaflet-control-zoom { display: none !important; }
+
+    #city-label {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 12px;
+      text-transform: uppercase;
+      color: #111;
+      pointer-events: none;
+      z-index: 1000;
+      white-space: nowrap;
+    }
+
+    #attr {
+      position: fixed;
+      bottom: 10px;
+      right: 14px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.5px;
+      color: #bbb;
+      z-index: 1000;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 10px;
+      left: 14px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #bbb;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SVG filter: invert → grayscale → gamma curve -->
+  <svg width="0" height="0" style="position:absolute;overflow:hidden">
+    <defs>
+      <filter id="mapFilter" x="0" y="0" width="100%" height="100%"
+              color-interpolation-filters="sRGB">
+
+        <!-- 1. Invert: 1 - wartość kanału -->
+        <feColorMatrix type="matrix"
+          values="-1 0 0 0 1
+                   0 -1 0 0 1
+                   0 0 -1 0 1
+                   0 0 0 1 0"
+          result="inverted"/>
+
+        <!-- 2. Grayscale -->
+        <feColorMatrix type="saturate" values="0"
+          in="inverted" result="gray"/>
+
+        <!-- 3. Krzywa tonalna (custom tone curve):
+             wejście 0.0→1.0 w 11 krokach co 0.1
+             tło (~0.92 po invert) → 1.0  białe
+             szczegóły (~0.85) → 0.58   rgb(148) widoczne
+             małe ulice (~0.80) → 0.35   rgb(89)  ciemne
+             drogi (~0.70) → 0.20        rgb(51)  bardzo ciemne
+             arterie (~0.60) → 0.13      rgb(33)  prawie czarne -->
+        <feComponentTransfer in="gray">
+          <feFuncR type="table" tableValues="0 0.12 0.22 0.30 0.33 0.35 0.38 0.46 0.60 0.87 1.00"/>
+          <feFuncG type="table" tableValues="0 0.12 0.22 0.30 0.33 0.35 0.38 0.46 0.60 0.87 1.00"/>
+          <feFuncB type="table" tableValues="0 0.12 0.22 0.30 0.33 0.35 0.38 0.46 0.60 0.87 1.00"/>
+        </feComponentTransfer>
+
+      </filter>
+    </defs>
+  </svg>
+
+  <div id="map"></div>
+  <div id="city-label">Wrocław</div>
+  <div id="attr">© OpenStreetMap contributors · © CARTO</div>
+  <div id="hint">scroll → zoom · drag → pan</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map', {
+      center: [51.107, 17.038],
+      zoom: 12,
+      zoomControl: false,
+      attributionControl: false,
+      minZoom: 9,
+      maxZoom: 19
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19,
+      detectRetina: true
+    }).addTo(map);
+  </script>
+</body>
+</html>

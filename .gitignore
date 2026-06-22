@@ -1,0 +1,14 @@
+# IDE
+.idea/
+
+# Surowe archiwa GIOŚ — za duże dla GitHub (48MB+ XLSX)
+data/historical/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Wygenerowane pliki HTML (odtwarzalne ze skryptów)
+data/mapa_stacji.html
+data/wykres_24h.html
+data/dashboard.html
+data/wroclaw-mapa-dane.html

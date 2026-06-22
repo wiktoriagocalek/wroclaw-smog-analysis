@@ -1,0 +1,33 @@
+sensor_id,station_id,nazwa_stacji,parametr,kod
+641,114,"Wrocław, ul. Bartnicza",tlenek azotu,NO
+642,114,"Wrocław, ul. Bartnicza",dwutlenek azotu,NO2
+643,114,"Wrocław, ul. Bartnicza",tlenki azotu,NOx
+644,114,"Wrocław, ul. Bartnicza",ozon,O3
+645,115,"Wrocław, ul. Na Grobli",pył zawieszony PM2.5,PM2.5
+652,117,"Wrocław, wyb. Conrada-Korzeniowskiego",arsen w PM10,As(PM10)
+653,117,"Wrocław, wyb. Conrada-Korzeniowskiego",benzo(a)antracen w PM10,BaA(PM10)
+654,117,"Wrocław, wyb. Conrada-Korzeniowskiego",benzo(a)piren w PM10,BaP(PM10)
+655,117,"Wrocław, wyb. Conrada-Korzeniowskiego",benzo(b)fluoranten w PM10,BbF(PM10)
+656,117,"Wrocław, wyb. Conrada-Korzeniowskiego",benzo(j)fluoranten w PM10,BjF(PM10)
+657,117,"Wrocław, wyb. Conrada-Korzeniowskiego",benzo(k)fluoranten w PM10,BkF(PM10)
+658,117,"Wrocław, wyb. Conrada-Korzeniowskiego",benzen,C6H6
+659,117,"Wrocław, wyb. Conrada-Korzeniowskiego",kadm w PM10,Cd(PM10)
+660,117,"Wrocław, wyb. Conrada-Korzeniowskiego",tlenek węgla,CO
+661,117,"Wrocław, wyb. Conrada-Korzeniowskiego","dibenzo(a,h)antracen w PM10",DBahA(PM10)
+662,117,"Wrocław, wyb. Conrada-Korzeniowskiego","indeno(1,2,3-cd)piren w PM10",IP(PM10)
+663,117,"Wrocław, wyb. Conrada-Korzeniowskiego",nikiel w PM10,Ni(PM10)
+664,117,"Wrocław, wyb. Conrada-Korzeniowskiego",tlenek azotu,NO
+665,117,"Wrocław, wyb. Conrada-Korzeniowskiego",dwutlenek azotu,NO2
+666,117,"Wrocław, wyb. Conrada-Korzeniowskiego",tlenki azotu,NOx
+667,117,"Wrocław, wyb. Conrada-Korzeniowskiego",ozon,O3
+668,117,"Wrocław, wyb. Conrada-Korzeniowskiego",ołów w PM10,Pb(PM10)
+669,117,"Wrocław, wyb. Conrada-Korzeniowskiego",pył zawieszony PM10,PM10
+670,117,"Wrocław, wyb. Conrada-Korzeniowskiego",pył zawieszony PM2.5,PM2.5
+672,117,"Wrocław, wyb. Conrada-Korzeniowskiego",dwutlenek siarki,SO2
+692,122,"Wrocław, ul. Orzechowa",benzo(a)piren w PM10,BaP(PM10)
+701,122,"Wrocław, ul. Orzechowa",pył zawieszony PM10,PM10
+737,129,"Wrocław, Al. Wiśniowa",tlenek węgla,CO
+739,129,"Wrocław, Al. Wiśniowa",tlenek azotu,NO
+740,129,"Wrocław, Al. Wiśniowa",dwutlenek azotu,NO2
+741,129,"Wrocław, Al. Wiśniowa",tlenki azotu,NOx
+744,129,"Wrocław, Al. Wiśniowa",pył zawieszony PM2.5,PM2.5

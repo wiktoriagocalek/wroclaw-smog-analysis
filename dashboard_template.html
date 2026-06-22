@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wrocław Air Quality Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; background:#f4f5f7; font-family:'Inter',sans-serif; color:#14161c; }
+
+.dash { display:flex; height:100vh; overflow:hidden; }
+
+/* ── Sidebar ─────────────────────────────────── */
+.sidebar {
+  width: 256px; flex-shrink: 0;
+  background: #fff; border-right: 1px solid #e7e8ec;
+  display: flex; flex-direction: column;
+  padding: 28px 20px 24px; overflow-y: auto; gap: 20px;
+}
+.sidebar-title {
+  font-size: 13px; font-weight: 600; color: #14161c;
+  display: flex; align-items: center; gap: 8px;
+}
+.sidebar-title .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #3b55ec; flex-shrink: 0;
+}
+.sidebar-subtitle {
+  font-size: 10px; color: #bbb; letter-spacing: 1px;
+  text-transform: uppercase; margin-top: 3px; padding-left: 16px;
+}
+
+/* Nav */
+.nav-tabs { display:flex; flex-direction:column; gap:3px; }
+.nav-btn {
+  width:100%; text-align:left; background:none; border:none;
+  border-radius:8px; padding:9px 12px;
+  font-size:12px; font-family:'Inter',sans-serif; font-weight:500;
+  color:#4b4f58; cursor:pointer; transition:background .15s, color .15s;
+  display:flex; align-items:center; gap:9px;
+}
+.nav-btn:hover  { background:#f4f5f7; }
+.nav-btn.active { background:#eff1fd; color:#3b55ec; }
+.nav-icon { font-size:13px; width:16px; text-align:center; flex-shrink:0; }
+
+/* KPI */
+.section-label {
+  font-size:10px; color:#bbb; letter-spacing:1px;
+  text-transform:uppercase; margin-bottom:-12px;
+}
+.kpi-card {
+  background:#f9f9fb; border-radius:12px; padding:14px 16px;
+}
+.kpi-label {
+  font-size:11px; color:#3b55ec; font-weight:600;
+  letter-spacing:0.3px; margin-bottom:6px;
+}
+.kpi-value {
+  font-size:26px; font-weight:700; color:#14161c;
+  line-height:1; letter-spacing:-0.5px;
+}
+.kpi-value span { font-size:12px; font-weight:400; color:#4b4f58; letter-spacing:0; }
+.kpi-sub { font-size:11px; color:#999; margin-top:5px; }
+
+.data-note {
+  font-size:10px; color:#ccc; line-height:1.7;
+  margin-top:auto; padding-top:16px; border-top:1px solid #f0f0f0;
+}
+
+/* ── Main ────────────────────────────────────── */
+.main { flex:1; overflow:hidden; position:relative; }
+.view { display:none; width:100%; height:100%; }
+.view.active { display:flex; flex-direction:column; }
+
+#view-teraz iframe { width:100%; height:100%; border:none; }
+
+.chart-wrap {
+  flex:1; display:flex; flex-direction:column;
+  padding:32px 40px; overflow-y:auto; background:#fff;
+}
+.chart-title   { font-size:18px; font-weight:700; color:#14161c; margin-bottom:4px; }
+.chart-desc    { font-size:12px; color:#999; margin-bottom:24px; max-width:600px; line-height:1.6; }
+
+/* Przełącznik parametrów */
+.param-tabs {
+  display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap;
+}
+.param-btn {
+  padding:7px 16px; border-radius:20px; border:1.5px solid #e7e8ec;
+  background:#fff; font-size:12px; font-weight:500; font-family:'Inter',sans-serif;
+  color:#4b4f58; cursor:pointer; transition:all .15s;
+}
+.param-btn:hover { border-color:#3b55ec; color:#3b55ec; }
+.param-btn.active { background:#3b55ec; border-color:#3b55ec; color:#fff; }
+.param-btn .param-dot {
+  display:inline-block; width:7px; height:7px;
+  border-radius:50%; margin-right:6px; vertical-align:middle;
+}
+
+.param-desc-box {
+  display:none; background:#f9f9fb; border-radius:10px;
+  padding:14px 18px; margin-bottom:24px;
+  font-size:12px; color:#4b4f58; line-height:1.7; max-width:580px;
+}
+.param-desc-box.active { display:block; }
+.param-desc-box strong { color:#14161c; }
+
+/* Heatmapa */
+#heatmap-svg-wrap { overflow-x:auto; }
+.heat-legend {
+  display:flex; align-items:center; gap:10px;
+  margin-top:16px; font-size:10px; color:#999;
+}
+.heat-legend-bar {
+  width:180px; height:8px; border-radius:4px;
+  border:1px solid #e7e8ec;
+}
+
+/* Sezonowość */
+#sezon-svg-wrap { overflow-x:auto; }
+.sezon-insight {
+  margin-top:24px; padding:16px 20px;
+  background:#f9f9fb; border-radius:10px;
+  font-size:12px; color:#4b4f58; line-height:1.8; max-width:620px;
+}
+.sezon-insight strong { color:#14161c; }
+</style>
+</head>
+<body>
+<div class="dash">
+
+  <!-- ── SIDEBAR ─────────────────────────────── -->
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-title"><span class="dot"></span>Wrocław Air Quality</div>
+      <div class="sidebar-subtitle">Dashboard · 2024</div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-view="teraz">
+        <span class="nav-icon">◉</span>Live mapa
+      </button>
+      <button class="nav-btn" data-view="dzien">
+        <span class="nav-icon">◷</span>Piec czy silnik?
+      </button>
+      <button class="nav-btn" data-view="rok">
+        <span class="nav-icon">◈</span>Sezonowość
+      </button>
+    </nav>
+
+    <div class="section-label">Statystyki 2024</div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Najgorsza godzina (PM2.5)</div>
+      <div class="kpi-value" id="kpi-godzina">—</div>
+      <div class="kpi-sub" id="kpi-godzina-sub"></div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Najgorszy miesiąc</div>
+      <div class="kpi-value" id="kpi-miesiac">—</div>
+      <div class="kpi-sub" id="kpi-miesiac-sub"></div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Ekwiwalent roczny</div>
+      <div class="kpi-value" id="kpi-papierosy">—<span> pap.</span></div>
+      <div class="kpi-sub">WHO: 22 µg/m³ PM2.5 = 1 papieros / dobę</div>
+    </div>
+
+    <p class="data-note">
+      Źródło: GIOŚ API + archiwum 2024<br>
+      Stacje: Conrada-Korzeniowskiego,<br>Al. Wiśniowa, Bartnicza, Na Grobli<br>
+      Normy WHO 2021: PM2.5 15 · NO₂ 25 · O₃ 100 µg/m³
+    </p>
+  </aside>
+
+  <!-- ── MAIN ──────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Widok 1: Live mapa -->
+    <div id="view-teraz" class="view active">
+      <iframe src="wroclaw-mapa-dane.html" title="Live mapa stacji pomiarowych Wrocław"></iframe>
+    </div>
+
+    <!-- Widok 2: Piec czy silnik (heatmapa 3 parametrów) -->
+    <div id="view-dzien" class="view">
+      <div class="chart-wrap">
+        <div class="chart-title">Piec czy silnik — co zatruwa Wrocław i kiedy?</div>
+        <div class="chart-desc">
+          Każda komórka = średnia godzinowa za dany miesiąc · dane GIOŚ 2024 · stacje wrocławskie.
+          Przełącz parametr żeby zobaczyć różne wzorce czasowe i ich źródła.
+        </div>
+
+        <div class="param-tabs">
+          <button class="param-btn active" data-param="pm25">
+            <span class="param-dot" style="background:#c81e1e"></span>PM2.5
+          </button>
+          <button class="param-btn" data-param="no2">
+            <span class="param-dot" style="background:#b45309"></span>NO₂
+          </button>
+          <button class="param-btn" data-param="o3">
+            <span class="param-dot" style="background:#15803d"></span>O₃
+          </button>
+        </div>
+
+        <div id="desc-pm25" class="param-desc-box active">
+          <strong>PM2.5 — pył zawieszony.</strong> Główny wskaźnik zdrowotny.
+          Źródło zimą: <strong>piece węglowe i gazowe</strong> w starszej zabudowie Wrocławia
+          (Nadodrze, Klecina). Charakterystyczny wzorzec: wieczorne szczyty (20:00–23:00)
+          i wysokie wartości przez całą dobę w grudniu–lutym.
+          Norma WHO: <strong>15 µg/m³</strong> / dobę.
+        </div>
+        <div id="desc-no2" class="param-desc-box">
+          <strong>NO₂ — dwutlenek azotu.</strong> Proxy dla <strong>ruchu samochodowego</strong>.
+          Wyraźne szczyty komunikacyjne: rano (7:00–9:00) i wieczorem (16:00–18:00),
+          widoczne przez cały rok niezależnie od sezonu.
+          Stacje przy arteriach (Al. Wiśniowa, Conrada) rejestrują wyższe wartości.
+          Norma WHO: <strong>25 µg/m³</strong> / dobę.
+        </div>
+        <div id="desc-o3" class="param-desc-box">
+          <strong>O₃ — ozon.</strong> Produkt <strong>reakcji fotochemicznych</strong>:
+          NOₓ + VOC + promieniowanie UV → O₃. Latem wartości rosną wraz ze słońcem —
+          szczyt około 14:00–16:00. Zimą prawie nieobecny.
+          Odwrotny wzorzec do PM2.5: im gorzej latem, tym gorzej zimą z PM2.5.
+          Norma WHO: <strong>100 µg/m³</strong> (8h peak).
+        </div>
+
+        <div id="heatmap-svg-wrap"></div>
+        <div class="heat-legend">
+          <span>0</span>
+          <div class="heat-legend-bar" id="heat-legend-bar"></div>
+          <span id="heat-legend-max"></span>
+          <span style="margin-left:20px;color:#ef4444">▬ norma WHO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Widok 3: Sezonowość -->
+    <div id="view-rok" class="view">
+      <div class="chart-wrap">
+        <div class="chart-title">Sezonowość — kiedy jest najgorzej w roku?</div>
+        <div class="chart-desc">
+          Miesięczna średnia PM2.5 (µg/m³) · wszystkie stacje wrocławskie · dane 2024.
+          Czerwona linia przerywana = norma WHO 15 µg/m³.
+        </div>
+        <div id="sezon-svg-wrap"></div>
+        <div class="sezon-insight" id="sezon-insight"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const DASH = __DASH_DATA__;
+
+// ── KPI ──────────────────────────────────────────────────────────────────────
+const kpi = DASH.kpi;
+document.getElementById('kpi-godzina').innerHTML =
+  `${kpi.najgorsza_godzina}:00<span> h</span>`;
+document.getElementById('kpi-godzina-sub').textContent =
+  `śr. ${kpi.pm25_najgorsza_godzina} µg/m³ PM2.5`;
+document.getElementById('kpi-miesiac').textContent = kpi.najgorszy_miesiac_label;
+document.getElementById('kpi-miesiac-sub').textContent =
+  `śr. ${kpi.pm25_najgorszy_miesiac} µg/m³ PM2.5`;
+document.getElementById('kpi-papierosy').innerHTML =
+  `${kpi.ekwiwalent_roczny}<span> pap.</span>`;
+
+// ── Nav widoków ───────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+  });
+});
+
+// ── Skala kolorów per parametr ───────────────────────────────────────────────
+const PALETY = {
+  pm25: {
+    stops: [[0,[255,255,255]],[8,[200,212,250]],[15,[59,85,236]],[25,[239,100,80]],[40,[200,30,30]]],
+    gradient: 'linear-gradient(to right,#fff 0%,#c8d4fa 25%,#3b55ec 45%,#ef6450 70%,#c81e1e 100%)',
+  },
+  no2: {
+    stops: [[0,[255,255,255]],[12,[254,243,199]],[25,[251,191,36]],[50,[217,119,6]],[80,[120,53,15]]],
+    gradient: 'linear-gradient(to right,#fff 0%,#fef3c7 30%,#fbbf24 55%,#d97706 75%,#78350f 100%)',
+  },
+  o3: {
+    stops: [[0,[255,255,255]],[50,[209,250,229]],[100,[16,185,129]],[150,[5,150,105]],[200,[1,78,54]]],
+    gradient: 'linear-gradient(to right,#fff 0%,#d1fae5 35%,#10b981 60%,#059669 80%,#014e36 100%)',
+  },
+};
+
+function pm25color(val, param) {
+  if (val == null) return '#f4f5f7';
+  const stops = PALETY[param].stops;
+  let lo = stops[0], hi = stops[stops.length-1];
+  for (let i = 0; i < stops.length-1; i++) {
+    if (val >= stops[i][0] && val <= stops[i+1][0]) { lo=stops[i]; hi=stops[i+1]; break; }
+  }
+  const t = hi[0]===lo[0] ? 1 : Math.min(1,(val-lo[0])/(hi[0]-lo[0]));
+  return `rgb(${Math.round(lo[1][0]+t*(hi[1][0]-lo[1][0]))},${Math.round(lo[1][1]+t*(hi[1][1]-lo[1][1]))},${Math.round(lo[1][2]+t*(hi[1][2]-lo[1][2]))})`;
+}
+
+// ── Heatmapa ─────────────────────────────────────────────────────────────────
+const MIES = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+let activeParam = 'pm25';
+
+function renderHeatmap(param) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const paramData = DASH[param];
+  const grid = {};
+  paramData.heatmap.forEach(d => { grid[`${d.godzina}-${d.miesiac}`] = d.v; });
+
+  const CELL_W=38, CELL_H=32, PAD_L=44, PAD_T=28, PAD_B=32;
+  const W = PAD_L + CELL_W*24, H = PAD_T + CELL_H*12 + PAD_B;
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  // Komórki
+  for (let m=0; m<12; m++) {
+    for (let g=0; g<24; g++) {
+      const val = grid[`${g}-${m+1}`];
+      const rect = document.createElementNS(ns,'rect');
+      rect.setAttribute('x', PAD_L + g*CELL_W);
+      rect.setAttribute('y', PAD_T + m*CELL_H);
+      rect.setAttribute('width', CELL_W-2); rect.setAttribute('height', CELL_H-2);
+      rect.setAttribute('rx',3); rect.setAttribute('fill', pm25color(val, param));
+      const title = document.createElementNS(ns,'title');
+      title.textContent = `${MIES[m]}, ${g}:00 — ${val!=null ? val.toFixed(1)+' µg/m³' : 'brak'}`;
+      rect.appendChild(title); svg.appendChild(rect);
+    }
+  }
+
+  // Linia normy WHO (pionowe granice nad/pod)
+  const whoGodz = paramData.who;
+  // Zaznaczenie na osi X — tylko info w legendzie
+
+  // Oś Y — miesiące
+  MIES.forEach((m,i) => {
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x', PAD_L-6); t.setAttribute('y', PAD_T+i*CELL_H+CELL_H/2+4);
+    t.setAttribute('text-anchor','end'); t.setAttribute('font-size','11');
+    t.setAttribute('fill','#999'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent = m; svg.appendChild(t);
+  });
+
+  // Oś X — godziny co 3h
+  [0,3,6,9,12,15,18,21].forEach(g => {
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x', PAD_L+g*CELL_W+CELL_W/2); t.setAttribute('y', PAD_T+12*CELL_H+18);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','11');
+    t.setAttribute('fill','#999'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent = `${g}:00`; svg.appendChild(t);
+  });
+
+  const wrap = document.getElementById('heatmap-svg-wrap');
+  wrap.innerHTML = ''; wrap.appendChild(svg);
+
+  // Legenda
+  document.getElementById('heat-legend-bar').style.background = PALETY[param].gradient;
+  document.getElementById('heat-legend-max').textContent = `${paramData.max_skala}+ µg/m³`;
+}
+
+// Przełącznik parametrów
+document.querySelectorAll('.param-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.param-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.param-desc-box').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeParam = btn.dataset.param;
+    document.getElementById('desc-' + activeParam).classList.add('active');
+    renderHeatmap(activeParam);
+  });
+});
+
+renderHeatmap('pm25');
+
+// ── Sezonowość ────────────────────────────────────────────────────────────────
+(function renderSezon() {
+  const data = DASH.pm25.sezonowosc;
+  const WHO  = 15;
+  const PAD  = {l:50,r:40,t:20,b:48};
+  const W=720, H=280;
+  const IW = W-PAD.l-PAD.r, IH = H-PAD.t-PAD.b;
+  const MAX = 40;
+  const ns  = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  const xStep = IW/11;
+  const px = m => PAD.l+(m-1)*xStep;
+  const py = v => PAD.t+IH*(1-v/MAX);
+
+  // Siatka
+  [0,10,20,30,40].forEach(v => {
+    const y=py(v);
+    const l=document.createElementNS(ns,'line');
+    l.setAttribute('x1',PAD.l); l.setAttribute('x2',PAD.l+IW);
+    l.setAttribute('y1',y); l.setAttribute('y2',y);
+    l.setAttribute('stroke',v===0?'#e7e8ec':'#f0f0f0'); l.setAttribute('stroke-width','1');
+    svg.appendChild(l);
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',PAD.l-8); t.setAttribute('y',y+4);
+    t.setAttribute('text-anchor','end'); t.setAttribute('font-size','10');
+    t.setAttribute('fill','#bbb'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent=v; svg.appendChild(t);
+  });
+
+  // Linia WHO
+  const wy=py(WHO);
+  const wl=document.createElementNS(ns,'line');
+  wl.setAttribute('x1',PAD.l); wl.setAttribute('x2',PAD.l+IW);
+  wl.setAttribute('y1',wy); wl.setAttribute('y2',wy);
+  wl.setAttribute('stroke','#ef4444'); wl.setAttribute('stroke-width','1.5');
+  wl.setAttribute('stroke-dasharray','6 4'); svg.appendChild(wl);
+  const wt=document.createElementNS(ns,'text');
+  wt.setAttribute('x',PAD.l+IW+6); wt.setAttribute('y',wy+4);
+  wt.setAttribute('font-size','10'); wt.setAttribute('fill','#ef4444');
+  wt.setAttribute('font-family','Inter,sans-serif');
+  wt.textContent='WHO 15'; svg.appendChild(wt);
+
+  // Gradient fill
+  const defs=document.createElementNS(ns,'defs');
+  const grad=document.createElementNS(ns,'linearGradient');
+  grad.setAttribute('id','ag'); grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  [[0,'0.18'],[100,'0']].forEach(([off,op]) => {
+    const s=document.createElementNS(ns,'stop');
+    s.setAttribute('offset',off+'%'); s.setAttribute('stop-color','#3b55ec');
+    s.setAttribute('stop-opacity',op); grad.appendChild(s);
+  });
+  defs.appendChild(grad); svg.appendChild(defs);
+
+  const bottom=PAD.t+IH;
+  const pathD=data.map((d,i)=>`${i===0?'M':'L'}${px(d.miesiac)},${py(d.srednia)}`).join(' ');
+  const areaD=pathD+` L${px(data[data.length-1].miesiac)},${bottom} L${px(data[0].miesiac)},${bottom} Z`;
+
+  const area=document.createElementNS(ns,'path');
+  area.setAttribute('d',areaD); area.setAttribute('fill','url(#ag)'); svg.appendChild(area);
+  const line=document.createElementNS(ns,'path');
+  line.setAttribute('d',pathD); line.setAttribute('fill','none');
+  line.setAttribute('stroke','#3b55ec'); line.setAttribute('stroke-width','2.5');
+  line.setAttribute('stroke-linejoin','round'); line.setAttribute('stroke-linecap','round');
+  svg.appendChild(line);
+
+  // Punkty
+  data.forEach(d => {
+    const c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',px(d.miesiac)); c.setAttribute('cy',py(d.srednia));
+    c.setAttribute('r','4');
+    c.setAttribute('fill', d.srednia>WHO ? '#ef4444' : '#3b55ec');
+    c.setAttribute('stroke','#fff'); c.setAttribute('stroke-width','2');
+    const title=document.createElementNS(ns,'title');
+    title.textContent=`${MIES[d.miesiac-1]}: ${d.srednia} µg/m³`;
+    c.appendChild(title); svg.appendChild(c);
+  });
+
+  // Etykiety X
+  data.forEach(d => {
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',px(d.miesiac)); t.setAttribute('y',H-10);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','11');
+    t.setAttribute('fill','#999'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent=MIES[d.miesiac-1]; svg.appendChild(t);
+  });
+
+  document.getElementById('sezon-svg-wrap').appendChild(svg);
+
+  // Insight
+  const max=data.reduce((a,b)=>a.srednia>b.srednia?a:b);
+  const min=data.reduce((a,b)=>a.srednia<b.srednia?a:b);
+  const diff=(max.srednia/min.srednia).toFixed(1);
+  const przekroczone=data.filter(d=>d.srednia>WHO).length;
+  document.getElementById('sezon-insight').innerHTML =
+    `W <strong>${MIES[max.miesiac-1]}</strong> średnie PM2.5 wyniosło <strong>${max.srednia} µg/m³</strong> — ` +
+    `${diff}× więcej niż w <strong>${MIES[min.miesiac-1]}</strong> (${min.srednia} µg/m³). ` +
+    `Norma WHO (15 µg/m³) była przekroczona przez <strong>${przekroczone} z 12 miesięcy</strong>. ` +
+    `Główna przyczyna zimy: niska emisja z ogrzewania domowego w połączeniu z inwersją ` +
+    `temperatur — Wrocław leży w dolinie Odry, co sprzyja zaleganiu zanieczyszczeń przy bezwietrznej pogodzie.`;
+})();
+</script>
+</body>
+</html>

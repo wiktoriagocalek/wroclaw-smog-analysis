@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Piec czy silnik — Wiktoria Gocałek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+<style>
+/* ── Reset sekcji projektu ──────────────────── */
+.project-page { background: #fff; }
+
+/* ── Hero ───────────────────────────────────── */
+.p2-hero {
+  padding: 96px 0 72px;
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+.p2-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: #3b55ec;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-bottom: 24px;
+}
+.p2-eyebrow .dot { width:7px; height:7px; border-radius:50%; background:#3b55ec; }
+.p2-headline {
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 700; line-height: 1.15;
+  color: #14161c; letter-spacing: -1px;
+  margin-bottom: 24px;
+}
+.p2-headline .accent { color: #3b55ec; }
+.p2-intro {
+  font-size: 16px; color: #4b4f58; line-height: 1.8;
+  max-width: 600px; margin: 0 auto 40px;
+}
+.p2-meta {
+  display: flex; justify-content: center; gap: 48px;
+  flex-wrap: nowrap; margin-bottom: 56px; align-items: flex-start;
+}
+.p2-meta-item { text-align: center; }
+.p2-meta-item strong { display: block; font-size: 12px; color: #bbb; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+.p2-meta-item span { font-size: 13px; color: #4b4f58; line-height: 1.7; }
+
+/* ── Kafelki intro ────────────────────────── */
+.intro-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (max-width: 800px) { .intro-grid { grid-template-columns: 1fr; } }
+
+.intro-card {
+  background: #f9f9fb;
+  border-radius: 20px;
+  padding: 32px 28px;
+  border: 1px solid #f0f0f0;
+}
+.intro-card-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.intro-card-tag .tag-dot {
+  width: 8px; height: 8px; border-radius: 50; flex-shrink: 0;
+}
+.intro-card-param {
+  font-size: 32px; font-weight: 700; letter-spacing: -1px;
+  color: #14161c; margin-bottom: 4px; line-height: 1;
+}
+.intro-card-name {
+  font-size: 13px; font-weight: 600; color: #4b4f58;
+  margin-bottom: 16px;
+}
+.intro-card-body {
+  font-size: 13px; color: #6b7280; line-height: 1.8;
+  margin-bottom: 20px;
+}
+.intro-card-who {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 600;
+  background: #fff; border: 1px solid #e7e8ec;
+  border-radius: 8px; padding: 6px 12px; color: #4b4f58;
+}
+.intro-card-who .who-val { color: #14161c; }
+
+/* ── Sekcje analityczne ─────────────────────── */
+.p2-section {
+  padding: 96px 0;
+  border-top: 1px solid #f0f0f0;
+}
+.p2-section-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 40px;
+}
+.section-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #3b55ec; margin-bottom: 12px;
+}
+.section-h2 {
+  font-size: clamp(22px, 3vw, 32px); font-weight: 700;
+  color: #14161c; letter-spacing: -0.5px; margin-bottom: 12px;
+}
+.section-lead {
+  font-size: 15px; color: #4b4f58; line-height: 1.8;
+  max-width: 640px; margin-bottom: 48px;
+}
+
+/* Insight box */
+.insight-box {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: #f9f9fb; border-radius: 12px; padding: 18px 22px;
+  margin-top: 32px; max-width: 720px;
+}
+.insight-icon { font-size: 18px; flex-shrink:0; margin-top:1px; }
+.insight-text { font-size: 13px; color: #4b4f58; line-height: 1.8; }
+.insight-text strong { color: #14161c; }
+
+/* ── Wykres liniowy ──────────────────────────── */
+.chart-container { overflow-x: auto; }
+.chart-legend {
+  display: flex; gap: 24px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: #4b4f58; font-weight: 500;
+}
+.legend-line {
+  width: 28px; height: 3px; border-radius: 2px;
+}
+
+/* ── Dwie heatmapy obok siebie ───────────────── */
+.heat-pair {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 40px; align-items: start;
+}
+@media (max-width: 900px) { .heat-pair { grid-template-columns: 1fr; } }
+.heat-card { }
+.heat-card-title {
+  font-size: 14px; font-weight: 600; color: #14161c;
+  margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+}
+.heat-card-sub { font-size: 11px; color: #bbb; margin-bottom: 16px; }
+.heat-legend-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; font-size: 10px; color: #bbb;
+}
+.heat-legend-bar {
+  flex: 1; max-width: 140px; height: 7px;
+  border-radius: 4px; border: 1px solid #e7e8ec;
+}
+
+/* ── Sekcja 4: mapa interaktywna ─────────────── */
+.map-final-wrap {
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06), 0 16px 40px rgba(0,0,0,.09);
+  height: 520px;
+}
+.map-final-wrap iframe { width:100%; height:100%; border:none; }
+
+.map-legend {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  margin-top: 20px; font-size: 12px; color: #4b4f58;
+}
+.map-legend-item { display:flex; align-items:center; gap:7px; }
+.map-legend-dot  { width:10px; height:10px; border-radius:50%; }
+</style>
+</head>
+<body class="project-page">
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="nav__logo" href="index.html"><span class="dot"></span> Wiktoria Gocałek</a>
+    <button class="nav__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <div class="nav__right">
+      <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cv.html">CV</a></li>
+        <li><a href="portfolio.html" class="active">Portfolio</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="lang-switch">
+        <button data-lang-btn="en" class="active">EN</button>
+        <button data-lang-btn="pl">PL</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ══════════════════════════════════════════
+       SEKCJA 1 — HERO
+  ══════════════════════════════════════════ -->
+  <section style="padding: 0 40px;">
+    <div class="p2-hero">
+      <div class="p2-eyebrow"><span class="dot"></span> PROJECT 02 · Data Engineering</div>
+      <h1 class="p2-headline"
+          data-en="Furnace or engine —<br><span class='accent'>what pollutes Wrocław</span><br>more and when?"
+          data-pl="Piec czy silnik —<br><span class='accent'>co zatruwa Wrocław</span><br>bardziej i kiedy?">
+        Piec czy silnik —<br>
+        <span class="accent">co zatruwa Wrocław</span><br>
+        bardziej i kiedy?
+      </h1>
+      <p class="p2-intro"
+         data-en="Who is responsible for Wrocław's smog: road transport or home heating? Based on a full year of archived hourly GIOŚ readings (2024), I compared two key markers: traffic-related NO₂ and heating-generated PM2.5. Here's what the data says."
+         data-pl="Kto odpowiada za wrocławski smog: transport kołowy czy ogrzewanie domowe? Na podstawie pełnego roku archiwalnych odczytów godzinowych GIOŚ (2024) zestawiłam ze sobą dwa kluczowe markery: związany z ruchem samochodowym NO₂ oraz generowany przez piece PM2.5. Oto co mówią dane.">
+        Kto odpowiada za wrocławski smog: transport kołowy czy ogrzewanie domowe?
+        Na podstawie pełnego roku archiwalnych odczytów godzinowych GIOŚ (2024)
+        zestawiłam ze sobą dwa kluczowe markery: związany z ruchem samochodowym NO₂
+        oraz generowany przez piece PM2.5. Oto co mówią dane.
+      </p>
+      <div class="p2-meta">
+        <div class="p2-meta-item">
+          <strong data-en="Tools" data-pl="Narzędzia">Narzędzia</strong>
+          <span>Python · Pandas · GIOŚ API · SVG</span>
+        </div>
+        <div class="p2-meta-item">
+          <strong data-en="Data" data-pl="Dane">Dane</strong>
+          <span data-en="17,000+ hourly measurements<br>2024 · latest GIOŚ archive"
+                data-pl="17 000+ pomiarów godzinowych<br>2024 · najnowsze archiwum GIOŚ">17 000+ pomiarów godzinowych<br>2024 · najnowsze archiwum GIOŚ</span>
+        </div>
+        <div class="p2-meta-item">
+          <strong data-en="Role" data-pl="Rola">Rola</strong>
+          <span>Solo project</span>
+        </div>
+      </div>
+      <a href="https://github.com/wiktoriagocalek" target="_blank" rel="noopener"
+         data-en="View code on GitHub →" data-pl="Zobacz kod na GitHub →"
+         style="
+        display:inline-flex; align-items:center; gap:6px;
+        font-size:14px; font-weight:500; color:#3b55ec;
+        text-decoration:none; margin-bottom:56px;
+        transition:gap .15s;
+      " onmouseover="this.style.gap='10px'" onmouseout="this.style.gap='6px'">
+        Zobacz kod na GitHub →
+      </a>
+    </div>
+
+    <!-- Kafelki intro — 3 "aktorzy" historii -->
+    <div class="intro-grid">
+
+      <div class="intro-card">
+        <div class="intro-card-tag" style="color:#c62828;">
+          <span class="tag-dot" style="background:#c62828;border-radius:50%;"></span>
+          <span data-en="Combustion · Furnaces" data-pl="Spalanie · Piece">Spalanie · Piece</span>
+        </div>
+        <div class="intro-card-param">PM2.5</div>
+        <div class="intro-card-name"
+             data-en="Particulate matter" data-pl="Pył zawieszony">Pył zawieszony</div>
+        <div class="intro-card-body"
+             data-en="Microscopic particles less than 2.5 µm in diameter — 40× thinner than a human hair. So small they pass through the lungs directly into the bloodstream. Main source in winter: <strong style='color:#14161c'>coal and gas furnaces</strong> in older buildings. Wrocław has many tenements not connected to the district heating network."
+             data-pl="Mikroskopijne cząsteczki o średnicy poniżej 2,5 µm — 40× cieńsze od ludzkiego włosa. Tak małe, że przenikają przez płuca wprost do krwiobiegu. Główne źródło zimą: <strong style='color:#14161c'>piece węglowe i gazowe</strong> w starszej zabudowie. Wrocław ma wiele kamienic bez podłączenia do sieci ciepłowniczej.">
+          Mikroskopijne cząsteczki o średnicy poniżej 2,5 µm —
+          40× cieńsze od ludzkiego włosa. Tak małe, że
+          przenikają przez płuca wprost do krwiobiegu.
+          Główne źródło zimą: <strong style="color:#14161c">piece węglowe i gazowe</strong>
+          w starszej zabudowie. Wrocław ma wiele kamienic bez
+          podłączenia do sieci ciepłowniczej.
+        </div>
+        <div class="intro-card-who"
+             data-en="WHO norm: <span class='who-val'>15 µg/m³</span> / day"
+             data-pl="Norma WHO: <span class='who-val'>15 µg/m³</span> / dobę">
+          Norma WHO: <span class="who-val">15 µg/m³</span> / dobę
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <div class="intro-card-tag" style="color:#b45309;">
+          <span class="tag-dot" style="background:#f97316;border-radius:50%;"></span>
+          <span data-en="Exhaust · Engines" data-pl="Spaliny · Silniki">Spaliny · Silniki</span>
+        </div>
+        <div class="intro-card-param">NO₂</div>
+        <div class="intro-card-name"
+             data-en="Nitrogen dioxide" data-pl="Dwutlenek azotu">Dwutlenek azotu</div>
+        <div class="intro-card-body"
+             data-en="A gas emitted by combustion engines — especially diesel. Irritates the respiratory tract and reacts with sunlight to form ozone. Unlike PM2.5, it has no season — <strong style='color:#14161c'>traffic peaks</strong> are visible year-round, morning and evening."
+             data-pl="Gaz wydzielany przez silniki spalinowe — szczególnie diesle. Drażni drogi oddechowe i reaguje ze światłem słonecznym, tworząc ozon. W przeciwieństwie do PM2.5 nie zna sezonu — <strong style='color:#14161c'>szczyty komunikacyjne</strong> widoczne są przez cały rok, rano i wieczorem.">
+          Gaz wydzielany przez silniki spalinowe —
+          szczególnie diesle. Drażni drogi oddechowe
+          i reaguje ze światłem słonecznym, tworząc ozon.
+          W przeciwieństwie do PM2.5 nie zna sezonu —
+          <strong style="color:#14161c">szczyty komunikacyjne</strong>
+          widoczne są przez cały rok, rano i wieczorem.
+        </div>
+        <div class="intro-card-who"
+             data-en="WHO norm: <span class='who-val'>25 µg/m³</span> / day"
+             data-pl="Norma WHO: <span class='who-val'>25 µg/m³</span> / dobę">
+          Norma WHO: <span class="who-val">25 µg/m³</span> / dobę
+        </div>
+      </div>
+
+      <div class="intro-card">
+        <div class="intro-card-tag" style="color:#15803d;">
+          <span class="tag-dot" style="background:#22c55e;border-radius:50%;"></span>
+          <span data-en="Photochemistry · Sun" data-pl="Fotochemia · Słońce">Fotochemia · Słońce</span>
+        </div>
+        <div class="intro-card-param">O₃</div>
+        <div class="intro-card-name"
+             data-en="Tropospheric ozone" data-pl="Ozon troposferyczny">Ozon troposferyczny</div>
+        <div class="intro-card-body"
+             data-en="Paradoxically — worse in summer. Forms when NO₂ from exhaust reacts with UV radiation. High ozone is a bad sign: it means lots of sunshine <em>and</em> lots of exhaust simultaneously. <strong style='color:#14161c'>Peak around 14:00–16:00</strong>, almost absent in winter and at night."
+             data-pl="Paradoksalnie — gorszy latem. Powstaje gdy NO₂ ze spalin reaguje z promieniowaniem UV. Wysoki ozon to zły znak: oznacza dużo słońca <em>i</em> dużo spalin jednocześnie. <strong style='color:#14161c'>Szczyt około 14–16</strong>, niemal nieobecny w zimie i w nocy.">
+          Paradoksalnie — gorszy latem. Powstaje gdy
+          NO₂ ze spalin reaguje z promieniowaniem UV.
+          Wysoki ozon to zły znak: oznacza dużo słońca
+          <em>i</em> dużo spalin jednocześnie.
+          <strong style="color:#14161c">Szczyt około 14–16</strong>,
+          niemal nieobecny w zimie i w nocy.
+        </div>
+        <div class="intro-card-who"
+             data-en="WHO norm: <span class='who-val'>100 µg/m³</span> (8h peak)"
+             data-pl="Norma WHO: <span class='who-val'>100 µg/m³</span> (8h peak)">
+          Norma WHO: <span class="who-val">100 µg/m³</span> (8h peak)
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SEKCJA 2 — ANATOMIA DOBY
+  ══════════════════════════════════════════ -->
+  <section class="p2-section">
+    <div class="p2-section-inner">
+      <div class="section-tag" data-en="Section 02 · Time-series" data-pl="Sekcja 02 · Time-series">Sekcja 02 · Time-series</div>
+      <h2 class="section-h2"
+          data-en="Daily distribution — emission profile"
+          data-pl="Rozkład dobowy — profil emisji">Rozkład dobowy — profil emisji</h2>
+      <p class="section-lead"
+         data-en="Time-series analysis shows that road transport paralyses the city during the day, while home heating takes over immediately after sunset. Grey bands mark rush hour periods."
+         data-pl="Analiza szeregów czasowych pokazuje, że transport kołowy paraliżuje miasto w dzień, podczas gdy ogrzewanie domowe dominuje natychmiast po zachodzie słońca. Szare obszary odzwierciedlają godziny szczytu komunikacyjnego.">
+        Analiza szeregów czasowych pokazuje, że transport kołowy paraliżuje miasto w dzień,
+        podczas gdy ogrzewanie domowe dominuje natychmiast po zachodzie słońca.
+        Szare obszary odzwierciedlają godziny szczytu komunikacyjnego.
+      </p>
+
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-line" style="background:#3b55ec;"></div>
+          <span data-en="PM2.5 — furnaces / combustion" data-pl="PM2.5 — piece / spalanie">PM2.5 — piece / spalanie</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-line" style="background:#f97316;"></div>
+          <span data-en="NO₂ — road traffic" data-pl="NO₂ — ruch samochodowy">NO₂ — ruch samochodowy</span>
+        </div>
+      </div>
+
+      <div class="chart-container" style="position:relative;">
+        <svg id="line-chart" width="900" height="300"
+             viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg"
+             style="display:block;">
+        </svg>
+        <div id="line-tooltip" style="
+          display:none; position:absolute; pointer-events:none;
+          background:#fff; border:1px solid #e7e8ec; border-radius:10px;
+          box-shadow:0 4px 16px rgba(0,0,0,.10); padding:12px 16px;
+          font-size:12px; font-family:'Inter',sans-serif; color:#14161c;
+          min-width:160px; z-index:10;
+        "></div>
+      </div>
+
+      <div class="insight-box">
+        <p class="insight-text" id="line-insight"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SEKCJA 3 — ANATOMIA ROKU
+  ══════════════════════════════════════════ -->
+  <section class="p2-section">
+    <div class="p2-section-inner">
+      <div class="section-tag" data-en="Section 03 · Heatmap analysis" data-pl="Sekcja 03 · Heatmap analysis">Sekcja 03 · Heatmap analysis</div>
+      <h2 class="section-h2"
+          data-en="Annual distribution — emission seasonality"
+          data-pl="Rozkład roczny — sezonowość emisji">Rozkład roczny — sezonowość emisji</h2>
+      <p class="section-lead"
+         data-en="From May to September, PM2.5 concentrations remain at minimal levels (blue shades on the chart). The situation changes drastically from November to February — on winter evenings, furnace emissions generate pollution many times exceeding transport emissions. The NO₂ profile, by contrast, shows almost complete independence from the seasons: traffic generates constant, distinct high-concentration bands during rush hours throughout the full 12 months."
+         data-pl="W okresie od maja do września stężenie PM2.5 utrzymuje się na minimalnym poziomie (niebieskie odcienie na wykresie). Sytuacja drastycznie zmienia się od listopada do lutego — w zimowe wieczory emisje z pieców generują zanieczyszczenia wielokrotnie przekraczające emisję transportową. Z kolei profil NO₂ wykazuje niemal całkowitą niezależność od pór roku: transport generuje stałe, wyraźne pasy podwyższonego stężenia w godzinach szczytu przez pełne 12 miesięcy.">
+        W okresie od maja do września stężenie PM2.5 utrzymuje się na minimalnym poziomie (niebieskie odcienie na wykresie).
+        Sytuacja drastycznie zmienia się od listopada do lutego — w zimowe wieczory emisje z pieców generują zanieczyszczenia
+        wielokrotnie przekraczające emisję transportową. Z kolei profil NO₂ wykazuje niemal całkowitą niezależność od pór roku:
+        transport generuje stałe, wyraźne pasy podwyższonego stężenia w godzinach szczytu przez pełne 12 miesięcy.
+      </p>
+
+      <div class="heat-pair">
+        <div class="heat-card">
+          <div class="heat-card-title">
+            <span style="width:10px;height:10px;border-radius:50%;background:#c81e1e;display:inline-block;"></span>
+            <span data-en="PM2.5 — Furnaces" data-pl="PM2.5 — Piece">PM2.5 — Piece</span>
+          </div>
+          <div class="heat-card-sub"
+               data-en="Explodes in winter · quiet in summer"
+               data-pl="Eksploduje zimą · spokojny latem">Eksploduje zimą · spokojny latem</div>
+          <div id="heat-pm25"></div>
+          <div class="heat-legend-row">
+            <span>0</span>
+            <div class="heat-legend-bar" style="background:linear-gradient(to right,#fff,#c8d4fa,#3b55ec,#ef6450,#c81e1e);"></div>
+            <span>40+ µg/m³</span>
+          </div>
+        </div>
+        <div class="heat-card">
+          <div class="heat-card-title">
+            <span style="width:10px;height:10px;border-radius:50%;background:#b45309;display:inline-block;"></span>
+            <span data-en="NO₂ — Engines" data-pl="NO₂ — Silniki">NO₂ — Silniki</span>
+          </div>
+          <div class="heat-card-sub"
+               data-en="Constant peak bands · year-round"
+               data-pl="Stałe pasy szczytowe · cały rok">Stałe pasy szczytowe · cały rok</div>
+          <div id="heat-no2"></div>
+          <div class="heat-legend-row">
+            <span>0</span>
+            <div class="heat-legend-bar" style="background:linear-gradient(to right,#fff,#fef3c7,#fbbf24,#d97706,#78350f);"></div>
+            <span>80+ µg/m³</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-box" style="max-width:100%;margin-top:40px;">
+        <p class="insight-text"
+           data-en="<strong>Winter nights: furnaces win.</strong> The PM2.5 heatmap is almost white from May to September — typical summer smog is just a fraction of winter values. NO₂, by contrast, maintains <strong>constant dark hourly bands year-round</strong> — engines have no season. When temperatures drop below 5°C, low-level emissions from home heating generate pollution several times exceeding transport emissions."
+           data-pl="<strong>Piec nokautuje w zimowe wieczory.</strong> Heatmapa PM2.5 jest niemal biała od maja do września — typowy smog letni to zaledwie ułamek wartości zimowych. Z kolei NO₂ ma <strong>stałe ciemne pasy godzinowe przez cały rok</strong> — silnik nie ma sezonu. Gdy temperatura spada poniżej 5°C, niska emisja z ogrzewania domowego generuje zanieczyszczenia kilkukrotnie przekraczające emisję transportową.">
+          <strong>Piec nokautuje w zimowe wieczory.</strong>
+          Heatmapa PM2.5 jest niemal biała od maja do września — typowy smog letni
+          to zaledwie ułamek wartości zimowych. Z kolei NO₂ ma
+          <strong>stałe ciemne pasy godzinowe przez cały rok</strong> —
+          silnik nie ma sezonu. Gdy temperatura spada poniżej 5°C,
+          niska emisja z ogrzewania domowego generuje zanieczyszczenia
+          kilkukrotnie przekraczające emisję transportową.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       SEKCJA 4 — INTERAKTYWNA MAPA
+  ══════════════════════════════════════════ -->
+  <section class="p2-section">
+    <div class="p2-section-inner">
+      <div class="section-tag" data-en="Section 04 · Live data" data-pl="Sekcja 04 · Live data">Sekcja 04 · Live data</div>
+      <h2 class="section-h2"
+          data-en="Local analysis — interactive station profile"
+          data-pl="Analiza lokalna — interaktywny profil stacji">Analiza lokalna — interaktywny profil stacji</h2>
+      <p class="section-lead"
+         data-en="Explore the spatial distribution of pollutants on the Wrocław map. Hover over a monitoring station to verify current readings, check the daily cigarette equivalent, and read the automatically generated analytical insight."
+         data-pl="Przeanalizuj rozkład przestrzenny zanieczyszczeń na mapie Wrocławia. Wybierz lub najedź na interesujący Cię punkt pomiarowy, aby zweryfikować bieżące odczyty, sprawdzić dobowy ekwiwalent papierosowy oraz zapoznać się z automatycznym, kontekstowym wnioskiem analitycznym.">
+        Przeanalizuj rozkład przestrzenny zanieczyszczeń na mapie Wrocławia. Wybierz lub najedź
+        na interesujący Cię punkt pomiarowy, aby zweryfikować bieżące odczyty, sprawdzić dobowy
+        ekwiwalent papierosowy oraz zapoznać się z automatycznym, kontekstowym wnioskiem analitycznym.
+      </p>
+
+      <div class="map-final-wrap">
+        <iframe src="smog-analysis/data/wroclaw-mapa-dane.html"
+                title="Interaktywna mapa stacji pomiarowych Wrocław">
+        </iframe>
+      </div>
+
+      <div class="map-legend">
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#3b55ec;"></div>
+          <span data-en="Active station — hover to see data" data-pl="Stacja aktywna — najedź aby zobaczyć dane">Stacja aktywna — najedź aby zobaczyć dane</span>
+        </div>
+        <div class="map-legend-item">
+          <div class="map-legend-dot" style="background:#b0b3bb;"></div>
+          <span data-en="Station temporarily without readings" data-pl="Stacja chwilowo bez odczytów">Stacja chwilowo bez odczytów</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 Wiktoria Gocałek</span>
+    <div class="footer__links">
+      <a href="mailto:wiktoriagocalek@proton.me">Email</a>
+      <a href="https://linkedin.com/in/wiktoriagocalek" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+const D = __PROJECT2_DATA__;
+
+// ══════════════════════════════════════════════════════
+// SEKCJA 2: Wykres liniowy (anatomia doby)
+// ══════════════════════════════════════════════════════
+(function() {
+  const ns  = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('line-chart');
+  const W=900, H=300;
+  const PAD = {l:52, r:24, t:20, b:44};
+  const IW  = W-PAD.l-PAD.r, IH = H-PAD.t-PAD.b;
+
+  // Normalizuj oba parametry na wspólną oś (% normy WHO)
+  // PM2.5 norma=15, NO2 norma=25 → dzielimy przez normę → oś = 0-2.5 (krotność normy)
+  const maxRatio = 2.5;
+  const pm25h = D.pm25.hourly;
+  const no2h  = D.no2.hourly;
+
+  const px = g => PAD.l + (g/23)*IW;
+  const py = (v, norma) => PAD.t + IH*(1 - (v/norma)/maxRatio);
+
+  function addEl(tag, attrs, parent) {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+    parent.appendChild(el); return el;
+  }
+
+  // Cienie szczytów komunikacyjnych
+  [[7,9],[16,18]].forEach(([a,b]) => {
+    addEl('rect', {
+      x: px(a), y: PAD.t,
+      width: px(b)-px(a), height: IH,
+      fill: '#f4f5f7',
+    }, svg);
+    addEl('text', {
+      x: (px(a)+px(b))/2, y: PAD.t+11,
+      'text-anchor':'middle', 'font-size':'10',
+      fill:'#c8cad1', 'font-family':'Inter,sans-serif'
+    }, svg).textContent = `${a}:00–${b}:00`;
+  });
+
+  // Siatka pozioma (krotności normy WHO)
+  [0, 0.5, 1, 1.5, 2, 2.5].forEach(r => {
+    const y = PAD.t + IH*(1-r/maxRatio);
+    addEl('line', {x1:PAD.l, x2:PAD.l+IW, y1:y, y2:y,
+      stroke: r===1 ? '#fca5a5' : '#f0f0f0',
+      'stroke-width': r===1 ? '1.5' : '1',
+      'stroke-dasharray': r===1 ? '4 3' : 'none'}, svg);
+    addEl('text', {
+      x: PAD.l-6, y: y+4, 'text-anchor':'end',
+      'font-size':'10', fill:'#bbb', 'font-family':'Inter,sans-serif'
+    }, svg).textContent = r===0 ? '0' : r===1 ? 'norma\nWHO' : `${r}×`;
+  });
+
+  // Etykieta normy WHO
+  addEl('text', {
+    x: PAD.l-6, y: PAD.t + IH*(1-1/maxRatio)+4,
+    'text-anchor':'end', 'font-size':'10',
+    fill:'#ef4444', 'font-family':'Inter,sans-serif'
+  }, svg).textContent = 'norma WHO';
+
+  // Linia PM2.5
+  const pm25path = Array.from({length:24},(_,g)=>
+    `${g===0?'M':'L'}${px(g)},${py(pm25h[g]??0, 15)}`).join(' ');
+  addEl('path', {d:pm25path, fill:'none', stroke:'#3b55ec',
+    'stroke-width':'2.5', 'stroke-linejoin':'round', 'stroke-linecap':'round'}, svg);
+
+  // Linia NO2
+  const no2path = Array.from({length:24},(_,g)=>
+    `${g===0?'M':'L'}${px(g)},${py(no2h[g]??0, 25)}`).join(' ');
+  addEl('path', {d:no2path, fill:'none', stroke:'#f97316',
+    'stroke-width':'2.5', 'stroke-linejoin':'round', 'stroke-linecap':'round'}, svg);
+
+  // Oś X — etykiety co 3h
+  [0,3,6,9,12,15,18,21,23].forEach(g => {
+    addEl('text', {
+      x:px(g), y:H-8, 'text-anchor':'middle',
+      'font-size':'11', fill:'#bbb', 'font-family':'Inter,sans-serif'
+    }, svg).textContent = `${g}:00`;
+  });
+
+  // Crosshair + tooltip
+  const crosshair = addEl('line', {
+    x1:0, x2:0, y1:PAD.t, y2:PAD.t+IH,
+    stroke:'#e7e8ec', 'stroke-width':'1.5', 'stroke-dasharray':'4 3',
+    display:'none'
+  }, svg);
+
+  const dotPm25 = addEl('circle', {r:4, fill:'#3b55ec', stroke:'#fff', 'stroke-width':'2', display:'none'}, svg);
+  const dotNo2  = addEl('circle', {r:4, fill:'#f97316', stroke:'#fff', 'stroke-width':'2', display:'none'}, svg);
+
+  // Overlay przechwytujący myszkę
+  const overlay = addEl('rect', {
+    x:PAD.l, y:PAD.t, width:IW, height:IH,
+    fill:'transparent', style:'cursor:crosshair'
+  }, svg);
+
+  const tooltip = document.getElementById('line-tooltip');
+  const svgEl   = document.getElementById('line-chart');
+
+  overlay.addEventListener('mousemove', e => {
+    const rect = svgEl.getBoundingClientRect();
+    const scaleX = 900 / rect.width;
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    const g = Math.max(0, Math.min(23, Math.round((mouseX - PAD.l) / (IW / 23))));
+
+    const xPos = px(g);
+    crosshair.setAttribute('x1', xPos); crosshair.setAttribute('x2', xPos);
+    crosshair.setAttribute('display', '');
+    dotPm25.setAttribute('cx', xPos); dotPm25.setAttribute('cy', py(pm25h[g]??0, 15)); dotPm25.setAttribute('display','');
+    dotNo2.setAttribute('cx',  xPos); dotNo2.setAttribute('cy',  py(no2h[g]??0,  25)); dotNo2.setAttribute('display','');
+
+    const pm = pm25h[g]?.toFixed(1) ?? '—';
+    const no = no2h[g]?.toFixed(1)  ?? '—';
+    const pmRatio = pm25h[g] ? (pm25h[g]/15).toFixed(2) : '—';
+    const noRatio = no2h[g]  ? (no2h[g]/25).toFixed(2)  : '—';
+
+    tooltip.innerHTML = `
+      <div style="font-weight:600;color:#14161c;margin-bottom:8px;">${g}:00</div>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+        <span style="width:10px;height:3px;border-radius:2px;background:#3b55ec;display:inline-block;flex-shrink:0;"></span>
+        <span style="color:#4b4f58;">PM2.5</span>
+        <span style="margin-left:auto;font-weight:600;">${pm} µg/m³</span>
+        <span style="color:#bbb;font-size:10px;">${pmRatio}× WHO</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span style="width:10px;height:3px;border-radius:2px;background:#f97316;display:inline-block;flex-shrink:0;"></span>
+        <span style="color:#4b4f58;">NO₂</span>
+        <span style="margin-left:auto;font-weight:600;">${no} µg/m³</span>
+        <span style="color:#bbb;font-size:10px;">${noRatio}× WHO</span>
+      </div>`;
+
+    // Pozycja tooltipa — nie wychodzi poza prawą krawędź
+    const tipX = (xPos / 900) * rect.width + rect.left - svgEl.parentElement.getBoundingClientRect().left;
+    const offset = g > 18 ? -175 : 16;
+    tooltip.style.left  = (tipX + offset) + 'px';
+    tooltip.style.top   = (PAD.t / 300 * rect.height) + 'px';
+    tooltip.style.display = 'block';
+  });
+
+  overlay.addEventListener('mouseleave', () => {
+    crosshair.setAttribute('display','none');
+    dotPm25.setAttribute('display','none');
+    dotNo2.setAttribute('display','none');
+    tooltip.style.display = 'none';
+  });
+
+  // Insight
+  const no2Peak = Object.entries(no2h).reduce((a,b)=>+b[1]>+a[1]?b:a);
+  const pm25Peak = Object.entries(pm25h).reduce((a,b)=>+b[1]>+a[1]?b:a);
+  document.getElementById('line-insight').innerHTML =
+    `Wykres NO₂ wyraźnie odwzorowuje dwa piki natężenia ruchu kołowego w godzinach szczytu ` +
+    `(7:00–9:00 oraz 16:00–18:00). Z kolei stężenie PM2.5 dominuje w porze nocnej — ` +
+    `emisja grzewcza gwałtownie przyspiesza wieczorem, osiągając dobowe maksimum ` +
+    `około godziny <strong>${pm25Peak[0]}:00 (${(+pm25Peak[1]).toFixed(1)} µg/m³)</strong>, ` +
+    `co wiąże się ze spadkiem temperatury oraz naturalnym dla tej pory brakiem wiatru, ` +
+    `który blokuje rozpraszanie zanieczyszczeń.`;
+})();
+
+// ══════════════════════════════════════════════════════
+// SEKCJA 3: Dwie heatmapy
+// ══════════════════════════════════════════════════════
+const MIES = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+
+const PALETY = {
+  pm25: [[0,[255,255,255]],[8,[200,212,250]],[15,[59,85,236]],[25,[239,100,80]],[40,[200,30,30]]],
+  no2:  [[0,[255,255,255]],[12,[254,243,199]],[25,[251,191,36]],[50,[217,119,6]],[80,[120,53,15]]],
+};
+
+function interpColor(val, stops) {
+  if (val == null) return '#f4f5f7';
+  let lo=stops[0], hi=stops[stops.length-1];
+  for (let i=0;i<stops.length-1;i++) {
+    if (val>=stops[i][0]&&val<=stops[i+1][0]){lo=stops[i];hi=stops[i+1];break;}
+  }
+  const t=hi[0]===lo[0]?1:Math.min(1,(val-lo[0])/(hi[0]-lo[0]));
+  return `rgb(${Math.round(lo[1][0]+t*(hi[1][0]-lo[1][0]))},${Math.round(lo[1][1]+t*(hi[1][1]-lo[1][1]))},${Math.round(lo[1][2]+t*(hi[1][2]-lo[1][2]))})`;
+}
+
+function renderHeat(containerId, paramKey) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const data = D[paramKey].heatmap;
+  const stops = PALETY[paramKey];
+  const grid = {};
+  data.forEach(d => { grid[`${d.godzina}-${d.miesiac}`] = d.v; });
+
+  const CW=26, CH=24, PL=36, PT=16, PB=24;
+  const W=PL+CW*24, H=PT+CH*12+PB;
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('width','100%');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('preserveAspectRatio','xMinYMin meet');
+
+  for (let m=0;m<12;m++) {
+    for (let g=0;g<24;g++) {
+      const val=grid[`${g}-${m+1}`];
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',PL+g*CW); rect.setAttribute('y',PT+m*CH);
+      rect.setAttribute('width',CW-1.5); rect.setAttribute('height',CH-1.5);
+      rect.setAttribute('rx',2); rect.setAttribute('fill',interpColor(val,stops));
+      const title=document.createElementNS(ns,'title');
+      title.textContent=`${MIES[m]}, ${g}:00 — ${val!=null?val.toFixed(1)+' µg/m³':'brak'}`;
+      rect.appendChild(title); svg.appendChild(rect);
+    }
+  }
+
+  // Oś Y
+  MIES.forEach((m,i) => {
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',PL-4); t.setAttribute('y',PT+i*CH+CH/2+4);
+    t.setAttribute('text-anchor','end'); t.setAttribute('font-size','10');
+    t.setAttribute('fill','#bbb'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent=m; svg.appendChild(t);
+  });
+
+  // Oś X co 6h
+  [0,6,12,18].forEach(g => {
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',PL+g*CW+CW/2); t.setAttribute('y',PT+12*CH+16);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','10');
+    t.setAttribute('fill','#bbb'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent=`${g}h`; svg.appendChild(t);
+  });
+
+  document.getElementById(containerId).appendChild(svg);
+}
+
+renderHeat('heat-pm25','pm25');
+renderHeat('heat-no2','no2');
+</script>
+</body>
+</html>

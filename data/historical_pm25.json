@@ -1,0 +1,17 @@
+{
+  "115": {
+    "pm25_zima": 20.24,
+    "papierosy_zima": 0.9,
+    "n_dni": 27
+  },
+  "117": {
+    "pm25_zima": 20.23,
+    "papierosy_zima": 0.9,
+    "n_dni": 31
+  },
+  "129": {
+    "pm25_zima": 24.57,
+    "papierosy_zima": 1.1,
+    "n_dni": 31
+  }
+}
