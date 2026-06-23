@@ -1,104 +1,121 @@
 # Wrocław Smog Analysis — Furnace or Engine?
 
-**Who is responsible for Wrocław's smog: road transport or home heating?**
+**Who is actually responsible for Wrocław's smog — home heating or road traffic — and does the answer change depending on the hour, month, or season?**
 
-A full-year hourly analysis of air quality data from GIOŚ (Poland's Chief Inspectorate for Environmental Protection), comparing two key pollution markers across all of 2024:
-
-- **PM2.5** — fine particulate matter, proxy for home heating / solid fuel combustion
-- **NO₂** — nitrogen dioxide, proxy for road traffic / diesel engines
-
-→ **[Live project in portfolio](https://wiktoriagocalek.github.io/portfolio/project-2.html)**
+Full-year hourly analysis of PM2.5 and NO₂ data from GIOŚ (Poland's Chief Inspectorate for Environmental Protection) across all of 2024, revealing two completely different pollution profiles driven by two completely different sources.
 
 ---
 
-## Key Findings
+## Highlights
 
-| | PM2.5 (furnaces) | NO₂ (traffic) |
-|---|---|---|
-| **Seasonality** | Explodes Nov–Feb, near-zero May–Sep | Constant year-round |
-| **Daily peak** | 21:00–23:00 (evening heating) | 07:00–09:00 & 16:00–18:00 (rush hour) |
-| **WHO exceedance** | Up to 3× norm on winter nights | Moderate, stable 0.5–1× norm |
-| **Verdict** | Wins in winter | Has no season |
-
-> On cold winter evenings, low-level heating emissions generate pollution **several times exceeding** traffic emissions. But traffic never takes a day off.
+| | |
+|---|---|
+| **Hourly measurements** | 17,000+ (full year 2024 · GIOŚ archive) |
+| **PM2.5 daily peak** | 22:00 — 18.3 µg/m³ (evening heating) |
+| **Cigarette equivalent** | 261 cigarettes/year (PM2.5 annual exposure) |
+| **Worst month** | December — avg 25.0 µg/m³ · 1.7× WHO norm |
+| **NO₂ peak hours** | 07:00–09:00 and 16:00–18:00 (rush hour) |
+| **Verdict** | Furnaces win in winter · Traffic has no season |
 
 ---
 
-## Project Structure
+## Pipeline
+
+```
+GIOŚ 2024 archive (XLSX)          GIOŚ live API
+─────────────────────────         ──────────────────
+powietrze.gios.gov.pl             api.gios.gov.pl
+2024_PM25_1g.xlsx                 /v1/rest/station/sensors
+2024_NO2_1g.xlsx  (+ 28 more)     /v1/rest/data/getData/
+         │                                │
+         ▼                                ▼
+  smog_historical.py              viz.py
+  smog_dashboard.py               · live station readings
+  · parse XLSX with openpyxl      · cigarette equivalent
+  · hourly averages per month     · per-station insight
+  · heatmap matrix (24h × 12m)         │
+  · cigarette equivalent calc          ▼
+         │                      data/wroclaw-mapa-dane.html
+         ▼                      (Leaflet.js live map)
+  data/dashboard_data.json
+         │
+         ▼
+  project-4.html
+  (portfolio page — SVG charts, heatmap, bilingual)
+```
+
+---
+
+## File structure
 
 ```
 smog-analysis/
-├── viz.py                  # Interactive Leaflet map with live GIOŚ API data
-├── smog_dashboard.py       # Main pipeline: 2024 archives → charts + portfolio page
+├── smog_dashboard.py       # main pipeline: XLSX → heatmaps + portfolio page
 ├── smog_historical.py      # Jan 2024 PM2.5 baseline (cigarette equivalent)
-├── smog.py                 # Data collection utilities
-├── project2_template.html  # Portfolio page template (EN/PL, SVG charts)
-├── dashboard_template.html # Standalone dashboard template
+├── smog.py                 # data collection utilities
+├── viz.py                  # live GIOŚ API → Leaflet.js map
+├── notebooks/
+│   └── 01_collect.ipynb    # exploratory data collection
 ├── data/
-│   ├── dashboard_data.json     # Processed yearly data (heatmaps, hourly averages, KPIs)
-│   ├── historical_pm25.json    # January 2024 PM2.5 baseline per station
-│   ├── dane.json               # Live station readings
 │   ├── stacje.csv              # Wrocław monitoring stations metadata
-│   ├── pomiary.csv             # Recent hourly measurements
-│   └── wroclaw-mapa.html       # Minimalist Leaflet map base
-└── notebooks/
-    └── 01_collect.ipynb        # Exploratory data collection
+│   ├── pomiary.csv             # recent hourly measurements
+│   ├── dashboard_data.json     # processed yearly data (heatmaps, KPIs)
+│   └── historical/             # 2024 XLSX archives (download separately)
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## Tech Stack
+## Stack
 
-- **Python** — pandas, openpyxl, requests, json
-- **Visualization** — pure SVG (no charting library), Leaflet.js, Leaflet.heat
-- **Data source** — [GIOŚ API v1](https://api.gios.gov.pl/pjp-api/v1/rest/) + 2024 annual archives
+- Python 3.10+
+- [pandas](https://pandas.pydata.org/) — time-series aggregation
+- [openpyxl](https://openpyxl.readthedocs.io/) — XLSX parsing
+- [requests](https://requests.readthedocs.io/) — GIOŚ REST API
+- [Leaflet.js](https://leafletjs.com/) + Leaflet.heat — interactive map (frontend)
 
 ---
 
-## How to Run
+## How to run
 
-**1. Install dependencies**
 ```bash
-pip install pandas openpyxl requests
-```
+pip install -r requirements.txt
 
-**2. Download 2024 GIOŚ archive** (48 MB, not included in repo)
-```bash
+# 1. Download 2024 GIOŚ archive (48 MB, not included in repo)
 curl -L "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/582" -o data/historical/2024.zip
-cd data/historical && unzip 2024.zip -d 2024/
-```
+cd data/historical && unzip 2024.zip -d 2024/ && cd ../..
 
-**3. Process data & generate pages**
-```bash
-python smog_historical.py   # baseline Jan 2024
-python smog_dashboard.py    # heatmaps, charts, portfolio page → project-2.html
-```
+# 2. Process historical data
+python smog_historical.py   # → Jan 2024 baseline
+python smog_dashboard.py    # → dashboard_data.json + project-4.html
 
-**4. Generate live map**
-```bash
+# 3. Generate live station map
 python viz.py               # fetches current readings from GIOŚ API
 ```
 
 ---
 
-## Data Sources
+## Data sources
 
-- **GIOŚ API** — live hourly readings: `https://api.gios.gov.pl/pjp-api/v1/rest/`
-- **GIOŚ 2024 archive** — annual XLSX files: `https://powietrze.gios.gov.pl/pjp/archives/downloadFile/582`
-- **WHO thresholds** — PM2.5: 15 µg/m³/day · NO₂: 25 µg/m³/day · O₃: 100 µg/m³ (8h)
-- **Cigarette equivalent** — Brennan et al. (2015): 22 µg/m³ PM2.5 per 24h ≈ 1 cigarette
+| Source | Dataset | Licence |
+|--------|---------|---------|
+| [GIOŚ](https://powietrze.gios.gov.pl/pjp/archives) | 2024 annual XLSX archives | Open (Polish public data) |
+| [GIOŚ API](https://api.gios.gov.pl/pjp-api/v1/rest/) | Live hourly readings | Open |
+| [WHO](https://www.who.int/news-room/feature-stories/detail/what-are-the-who-air-quality-guidelines) | Air quality guidelines | PM2.5: 15 µg/m³/day · NO₂: 25 µg/m³/day |
+| Brennan et al. (2015) | Cigarette equivalent | 22 µg/m³ PM2.5 per 24h ≈ 1 cigarette |
 
 ---
 
-## Monitoring Stations (Wrocław)
+## Monitoring stations (Wrocław)
 
 | Code | Location | Measures |
-|---|---|---|
+|------|----------|---------|
 | DsWrocWybCon | Wybrzeże Conrada | PM2.5, NO₂, O₃ |
 | DsWrocAlWisn | Al. Wiśniowa | PM2.5, NO₂ |
 | DsWrocNaGrob | Na Grobli | PM2.5 (24h avg) |
-| DsWrocBartni | ul. Bartnicza | NO₂, NO, O₃ (traffic station) |
+| DsWrocBartni | ul. Bartnicza | NO₂, NO, O₃ |
 
 ---
 
-*Portfolio project by [Wiktoria Gocałek](https://github.com/wiktoriagocalek) · Data Engineering · 2026*
+*Wiktoria Gocałek · 2026 · [portfolio](https://wiktoriagocalek.github.io)*

@@ -448,7 +448,7 @@ nakładka = f"""
 
         panel.innerHTML = `
           <p class="adres">${{s.nazwa}}</p>
-          <p class="meta">${{brakDanych ? 'brak aktualnych danych · stacja GIOŚ' : n + ' czujnik' + (n===1?'':n<5?'i':'ów') + ' · stacja GIOŚ'}}</p>
+          <p class="meta">${{brakDanych ? 'brak aktualnych danych · stacja GIOŚ' : n + ' czujnik' + (n===1?'':n<5?'i':'ów')}} · <a href="https://powietrze.gios.gov.pl/pjp/current/station_details/chart/${{s.id}}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px;">stacja GIOŚ</a></p>
           <div class="params">${{brakDanych ? '<span style="font-size:11px;color:#999;">Czujnik prawdopodobnie w serwisie.</span>' : chipy}}</div>
           ${{papierosyHtml}}
           ${{insightHtml}}`;
