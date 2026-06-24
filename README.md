@@ -21,13 +21,45 @@ Full-year hourly analysis of PM2.5 and NO₂ data from GIOŚ (Poland's Chief Ins
 
 ---
 
-## Pipeline
+## Architecture — Cloud ELT Pipeline
 
 ```
-GIOŚ 2024 archive (XLSX)          GIOŚ live API
-─────────────────────────         ──────────────────
-powietrze.gios.gov.pl             api.gios.gov.pl
-2024_PM25_1g.xlsx                 /v1/rest/station/sensors
+                        EXTRACT
+          ┌─────────────────────────────────┐
+          │         GIOŚ REST API           │
+          │   api.gios.gov.pl/pjp-api/v1    │
+          │  stations · sensors · readings  │
+          └─────────────┬───────────────────┘
+                        │ bigquery_loader.py
+                        │ (Python + google-cloud-bigquery)
+                        ▼
+                        LOAD
+          ┌─────────────────────────────────┐
+          │       Google BigQuery           │
+          │   dataset: smog_wroclaw         │
+          │   ├── raw_measurements          │
+          │   └── stations                  │
+          └─────────────┬───────────────────┘
+                        │ sql/v_*.sql
+                        │ (BigQuery SQL views)
+                        ▼
+                      TRANSFORM
+          ┌─────────────────────────────────┐
+          │       BigQuery Views            │
+          │   ├── v_daily_averages          │
+          │   ├── v_who_exceedances         │
+          │   ├── v_hourly_pattern          │
+          │   └── v_cigarette_equivalent    │
+          └──────┬──────────────┬───────────┘
+                 │              │
+                 ▼              ▼
+          Looker Studio    Portfolio frontend
+          (BI dashboard)   (project-4.html)
+```
+
+---
+
+## Pipeline (local / original)
 2024_NO2_1g.xlsx  (+ 28 more)     /v1/rest/data/getData/
          │                                │
          ▼                                ▼
@@ -94,6 +126,36 @@ python smog_dashboard.py    # → dashboard_data.json + project-4.html
 
 # 3. Generate live station map
 python viz.py               # fetches current readings from GIOŚ API
+```
+
+---
+
+## Cloud pipeline setup (BigQuery)
+
+```bash
+# 1. Install dependency
+pip install google-cloud-bigquery
+
+# 2. Create GCP project at console.cloud.google.com
+#    Enable: BigQuery API
+
+# 3. Create service account → role: BigQuery Editor → download JSON key
+export GOOGLE_APPLICATION_CREDENTIALS="path/to/service-account-key.json"
+
+# 4. Set your project ID in bigquery_loader.py (line: GCP_PROJECT = ...)
+
+# 5. Run the ELT loader
+python bigquery_loader.py
+
+# 6. Create SQL views in BigQuery console (copy-paste from sql/ folder)
+#    or via bq CLI:
+bq query --use_legacy_sql=false < sql/v_daily_averages.sql
+bq query --use_legacy_sql=false < sql/v_who_exceedances.sql
+bq query --use_legacy_sql=false < sql/v_hourly_pattern.sql
+bq query --use_legacy_sql=false < sql/v_cigarette_equivalent.sql
+
+# 7. Connect Looker Studio: lookerstudio.google.com
+#    → Create report → BigQuery connector → select smog_wroclaw views
 ```
 
 ---
