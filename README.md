@@ -1,5 +1,7 @@
 # Wrocław Smog Analysis — Furnace or Engine?
 
+**[→ Live demo](https://wiktoriagocalek.github.io/project-4.html)**
+
 **Who is actually responsible for Wrocław's smog — home heating or road traffic — and does the answer change depending on the hour, month, or season?**
 
 Full-year hourly analysis of PM2.5 and NO₂ data from GIOŚ (Poland's Chief Inspectorate for Environmental Protection) across all of 2024, revealing two completely different pollution profiles driven by two completely different sources.
